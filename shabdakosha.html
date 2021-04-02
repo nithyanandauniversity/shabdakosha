@@ -1,0 +1,325 @@
+<style>
+
+@import url("https://fonts.googleapis.com/css?family=Cabin:700|Crimson+Pro:400,700&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  position: relative;
+}
+
+.opaque {
+  opacity: 1 !important;
+}
+
+.container {
+  position: absolute;
+  left: 50%;
+  transform: translatex(-50%);
+  width: 80vw;
+}
+
+.letters {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin-top: 50px;
+  margin-bottom: 70px;
+  padding: 0;
+  font-family: Cabin, sans-serif;
+  flex-wrap: wrap;
+}
+
+.letter {
+  width: 27px;
+  height: 27px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 1px;
+  box-shadow: 0 2px 1px #dadada;
+  border: 1px solid #dadada;
+  border-radius: 3px;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  transform: translatey(-3px);
+  transition: all 100ms;
+
+  &:hover {
+    background-color: #fff;
+    transform: translatey(-5px);
+    box-shadow: 0 4px 2px #dadada;
+  }
+
+  &:active {
+    background-color: #fff;
+    transform: translatey(0px);
+    box-shadow: 0 1px 2px #dadada;
+  }
+}
+
+.letter-title {
+  font-size: 70px;
+  font-weight: 400;
+  margin-bottom: 30px;
+  font-family: "Crimson Pro", Serif;
+  display: flex;
+  justify-content: center;
+}
+
+/* General styles for the table */
+table {
+  font-family: "Crimson Pro", Serif;
+  border-collapse: collapse;
+  position: absolute;
+  left: 50%;
+  transform: translatex(-50%);
+  width: 100%;
+  opacity: 0;
+
+  & a:link {
+    text-decoration: none;
+    color: #691f1f;
+  }
+
+  & a:visited {
+    text-decoration: none;
+    color: #af0000;
+  }
+
+  & a:hover {
+    text-decoration: underline;
+  }
+
+  & a:active {
+    text-decoration: none;
+    color: #691f1f;
+  }
+}
+
+th {
+  border-bottom: 2px solid grey;
+  font-weight: 700;
+}
+
+th,
+td {
+  text-align: left;
+}
+
+/* Styles for card mode */
+@media (max-width: 855px) {
+  table {
+    display: block;
+  }
+  thead {
+    display: none;
+  }
+  tbody {
+    display: table;
+  }
+  tr {
+    display: table-row-group;
+  }
+  tr:nth-child(odd) {
+    background-color: #f9f9f9;
+  }
+  td {
+    display: table-row;
+  }
+  td:before,
+  td > span {
+    display: table-cell;
+    padding: 7px 13px;
+    border: 1px solid #e8e8e8;
+  }
+  td:before {
+    content: attr(data-label);
+    font-weight: 600;
+  }
+}
+
+/* Styles for normal mode */
+@media (min-width: 856px) {
+  th {
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  th,
+  td {
+    padding: 7px 13px;
+    vertical-align: top;
+  }
+  tr:nth-child(even) {
+    background-color: #f9f9f9; /* optional */
+  }
+}
+
+
+.page-title {
+  color: #5e2121;
+  margin: 10px auto;
+  font-size: 60px;
+  font-weight: 400;
+  font-family: "Crimson Pro", Serif;
+text-align: center;
+}
+
+.page-subtitle { 
+  margin: 10px auto;
+
+  max-width: 500px;
+  font-size: 18px;
+  font-weight: 300;
+  font-family: "Crimson Pro", Serif;
+text-align: center;
+}
+
+</style>
+
+
+<div align="center" class="page-subtitle">
+
+  <div class="page-title">Nithyananda Shabdakosh</div>
+
+  
+  <i>"Even the English dictionaries have to be recreated. I will create a Dictionary. The comprehensive meanings and definitions of spiritual terms. Dharma Samsthaapanaarthaaya - Establishing the science of Living Enlightenment, Sambhavaami - I happen, yuge yuge - age after age"</i>
+
+    <br><br><strong> ~ Nithya Satsang, 12 February 2012 (Bhagavad Gita 4.8)</strong>
+
+</div>
+
+
+<div class="container">
+  <ul class="letters"></ul>
+  <div class="letter-title"></div>
+  <table class="dict-table">
+    <thead class="dict-table__head">
+      <tr class="dict-table__head-tr">
+        <th class="dict-table__head-td dict-table__td-term dict-table-head__td-term">TERM</th>
+        <th class="dict-table__head-td dict-table__td-definition dict-table-head__td-definition">DEFINITION</th>
+        <th class="dict-table__head-td dict-table__td-source dict-table-head__td-source">SOURCE</th>
+      </tr>
+    </thead>
+    <tbody class="dict-table__body"></tbody>
+  </table>
+</div>
+
+<script type="text/javascript">
+
+const jsonUrl =
+  "https://jsonstorage.net/api/items/97b27509-7274-482f-800f-392dfcf72165";
+
+if (typeof String.prototype.trim === "undefined") {
+  String.prototype.trim = function() {
+    return String(this).replace(/^\s+|\s+$/g, "");
+  };
+}
+
+const dict = {};
+
+function displayLetters() {
+  const A = 65;
+  const Z = 90;
+
+  const lettersDiv = document.querySelector(".letters");
+
+  for (let i = A; i <= Z; i++) {
+    const letter = String.fromCharCode(i);
+    if (!dict[letter]) continue;
+    const el = document.createElement("li");
+    el.setAttribute("class", "letter");
+    el.textContent = letter;
+    el.addEventListener("click", e => {
+      onLetterClicked(e.target.textContent);
+    });
+    lettersDiv.appendChild(el);
+  }
+}
+
+function displayletterTitle(letter) {
+  const el = document.querySelector(".letter-title");
+  el.textContent = letter;
+}
+
+function displayWordsForLetter(letter) {
+  const data = dict[letter];
+  const el = document.querySelector(".dict-table__body");
+  el.innerHTML = "";
+  for (let datum of data) {
+    const newTr = document.createElement("tr");
+    newTr.setAttribute("class", "dict-table__body-tr");
+    const newTd_1 = document.createElement("td");
+    newTd_1.innerHTML = `<span>${datum.term.trim()}</span>`;
+    newTd_1.setAttribute("class", "dict-table__body-td dict-table__td-term");
+    newTd_1.setAttribute("data-label", "Term");
+    const newTd_2 = document.createElement("td");
+    newTd_2.innerHTML = `<span>${datum.definition.trim()}</span>`;
+    newTd_2.setAttribute(
+      "class",
+      "dict-table__body-td dict-table__td-definition"
+    );
+    newTd_2.setAttribute("data-label", "Definition");
+    const newTd_3 = document.createElement("td");
+    newTd_3.innerHTML = `<span><a href=${datum.link.trim()}>${datum.source.trim()}</a></span>`;
+    newTd_3.setAttribute("class", "dict-table__body-td dict-table__td-source");
+    newTd_3.setAttribute("data-label", "Source");
+    newTr.appendChild(newTd_1);
+    newTr.appendChild(newTd_2);
+    newTr.appendChild(newTd_3);
+    el.appendChild(newTr);
+  }
+}
+
+function onLetterClicked(letter) {
+  displayletterTitle(letter);
+  displayWordsForLetter(letter);
+}
+
+function processData(data) {
+  for (let datum of data) {
+    const firstLetter = datum.term.trim().toUpperCase()[0];
+
+    if (firstLetter >= "A" && firstLetter <= "Z") {
+      if (dict[firstLetter]) {
+        dict[firstLetter].push(datum);
+      } else {
+        dict[firstLetter] = [datum];
+      }
+    }
+  }
+}
+
+function displayTable() {
+  const el = document.querySelector("table");
+  el.classList.add("opaque");
+}
+
+function main() {
+  fetch(jsonUrl)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(myJson) {
+      processData(myJson);
+      displayLetters();
+      displayTable();
+      onLetterClicked("A");
+    });
+}
+
+function ready(fn) {
+  if (document.readyState != "loading") {
+    fn();
+  } else {
+    document.addEventListener("DOMContentLoaded", fn);
+  }
+}
+
+ready(main);
+
+
+</script>
